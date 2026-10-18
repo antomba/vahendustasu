@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="et">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f4f5f0">
+  <meta name="description" content="Kinnisvara vahendustasu kalkulaator. Arvuta vahendustasu koos käibemaksuga või ilma, ka võrguühenduseta.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="./icons/icon.svg">
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="./styles.css">
+  <title>Vahendustasu</title>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="Vahendustasu">
+      <span class="brand-icon" aria-hidden="true">v<span>.</span></span>
+      <span>vahendustasu<span class="brand-dot">.</span></span>
+    </a>
+    <button class="settings-button" id="open-settings" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3"/><circle cx="15" cy="17" r="3"/></svg>
+      <span data-i18n="settings">Seaded</span>
+    </button>
+  </header>
+  <main>
+    <section class="calculator" aria-label="Kalkulaator" data-i18n-aria="calculator">
+      <div class="input-panel">
+        <div class="section-heading"><span class="step">01</span><h2 data-i18n="calculator">Kalkulaator</h2><span class="currency-tag">EUR</span></div>
+        <label for="property" data-i18n="property">Kinnisvara väärtus</label>
+        <div class="amount-field"><input id="property" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="nt 200 000" data-i18n-placeholder="propertyPlaceholder" aria-describedby="property-error"><span aria-hidden="true">€</span></div>
+        <p class="field-error" id="property-error" hidden></p>
+        <label class="commission-label" for="commission" data-i18n="commission">Vahendustasu määr</label>
+        <div class="select-wrap"><select id="commission"><option value="100">1%</option><option value="150">1,5%</option><option value="200" selected>2%</option><option value="250">2,5%</option><option value="300">3%</option><option value="350">3,5%</option><option value="400">4%</option></select><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m6 8 4 4 4-4"/></svg></div>
+        <label class="vat-toggle" for="include-vat"><span><span class="vat-title" data-i18n="includeVat">Lisa käibemaks</span><span class="vat-detail" id="vat-detail">KM 24%</span></span><input id="include-vat" type="checkbox"><span class="switch" aria-hidden="true"></span></label>
+      </div>
+      <div class="result-panel">
+        <div class="result-top"><span class="step">02</span><h2 data-i18n="result">Vahendustasu kokku</h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 19 19 5M5 5h14v14"/></svg></div>
+        <output id="total" class="total" for="property commission include-vat">—<span class="empty-currency"> EUR</span></output>
+        <p class="tax-status" id="tax-status">Ilma käibemaksuta</p>
+        <dl class="breakdown"><div><dt data-i18n="beforeVat">Vahendustasu</dt><dd id="base-result">—</dd></div><div id="vat-row" hidden><dt id="vat-label">Käibemaks (24%)</dt><dd id="vat-result">—</dd></div></dl>
+        <button id="copy" class="copy-button" type="button" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg><span data-i18n="copy">Kopeeri tulemus</span></button>
+        <p id="copy-feedback" class="copy-feedback" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+    <p id="storage-warning" class="notice" role="status" hidden></p>
+    <p class="privacy"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="4.5" y="8.5" width="11" height="8" rx="2"/><path d="M7 8V6a3 3 0 0 1 6 0v2"/></svg><span data-i18n="footer">Sinu arvutused jäävad sinu seadmesse.</span></p>
+  </main>
+  <footer class="site-footer"><span class="offline-status"><span id="offline-dot" class="status-dot" aria-hidden="true"></span><span id="offline-status" role="status">Võrguühenduseta kasutamise ettevalmistamine…</span></span><button id="open-install" class="install-button" type="button"><span data-i18n="install">Lisa avakuvale</span><span aria-hidden="true">↗</span></button></footer>
+  <dialog id="settings-dialog" aria-labelledby="settings-heading">
+    <div class="dialog-header"><h2 id="settings-heading" data-i18n="settingsTitle">Sinu eelistused</h2><button class="close-button" data-close="settings-dialog" type="button" data-i18n-aria="close" aria-label="Sulge">×</button></div>
+    <p class="dialog-intro" data-i18n="settingsIntro">Seaded salvestatakse ainult sellesse brauserisse.</p>
+    <label for="language" data-i18n="language">Keel</label>
+    <select id="language"><option value="EE" lang="et">EE · Eesti</option><option value="EN" lang="en">EN · English</option><option value="RU" lang="ru">RU · Русский</option></select>
+    <label class="commission-label" for="vat-rate" data-i18n="vatRate">Käibemaksumäär</label>
+    <div class="amount-field settings-amount"><input id="vat-rate" type="text" inputmode="decimal" autocomplete="off" aria-describedby="vat-hint vat-error"><span aria-hidden="true">%</span></div>
+    <p class="field-hint" id="vat-hint" data-i18n="vatHint">Rakendub, kui käibemaks on sisse lülitatud.</p>
+    <p class="field-error" id="vat-error" hidden></p>
+    <button class="primary-button" data-close="settings-dialog" type="button" data-i18n="done">Valmis</button>
+  </dialog>
+  <dialog id="install-dialog" aria-labelledby="install-heading">
+    <div class="dialog-header"><h2 id="install-heading" data-i18n="installTitle">Alati käepärast</h2><button class="close-button" data-close="install-dialog" type="button" data-i18n-aria="close" aria-label="Sulge">×</button></div>
+    <p class="dialog-intro" data-i18n="installIntro">Lisa kalkulaator avakuvale, et see oleks ühe puudutuse kaugusel.</p>
+    <p class="install-instruction" data-i18n="installApple">Ava Safaris jagamismenüü ja vali „Lisa avakuvale”.</p>
+    <p class="install-instruction" data-i18n="installOther">Vali brauseri menüüst „Installi rakendus” või „Lisa avakuvale”, kui see on saadaval.</p>
+    <p class="field-hint" data-i18n="installOffline">Pärast esimest laadimist töötab kalkulaator ka ilma internetita.</p>
+    <button class="primary-button" data-close="install-dialog" type="button" data-i18n="done">Valmis</button>
+  </dialog>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
