@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parseDecimal, parseVat, calculate, formatMoney, readSettings } from '../public/calculator.js';
+import { parseDecimal, parseVat, calculate, formatMoney, readSettings, formatAmountInput, splitTotal } from '../public/calculator.js';
 import { translations } from '../public/translations.js';
 
 test('accepts decimal separators and properly grouped pasted amounts', () => {
@@ -54,11 +54,11 @@ test('formats localized exact monetary amounts including large integers', () => 
 
 test('restores only valid settings and tolerates corrupt or blocked storage', () => {
   const storage = value => ({ getItem: () => value });
-  assert.deepEqual(readSettings(storage(null)), { language: 'EE', vat: '24', available: true });
-  assert.deepEqual(readSettings(storage('{broken')), { language: 'EE', vat: '24', available: true });
-  assert.deepEqual(readSettings(storage('{"language":"RU","vat":"22.5","property":"200000"}')), { language: 'RU', vat: '22.5', available: true });
-  assert.deepEqual(readSettings(storage('{"language":"FR","vat":"101"}')), { language: 'EE', vat: '24', available: true });
-  assert.deepEqual(readSettings({ getItem() { throw new Error('blocked'); } }), { language: 'EE', vat: '24', available: false });
+  assert.deepEqual(readSettings(storage(null)), { language: 'EE', vat: '24', split: '40', available: true });
+  assert.deepEqual(readSettings(storage('{broken')), { language: 'EE', vat: '24', split: '40', available: true });
+  assert.deepEqual(readSettings(storage('{"language":"RU","vat":"22.5","property":"200000"}')), { language: 'RU', vat: '22.5', split: '40', available: true });
+  assert.deepEqual(readSettings(storage('{"language":"FR","vat":"101"}')), { language: 'EE', vat: '24', split: '40', available: true });
+  assert.deepEqual(readSettings({ getItem() { throw new Error('blocked'); } }), { language: 'EE', vat: '24', split: '40', available: false });
 });
 
 test('all languages provide every interface translation', () => {
@@ -67,4 +67,25 @@ test('all languages provide every interface translation', () => {
     assert.deepEqual(Object.keys(translations[language]).sort(), keys);
     for (const value of Object.values(translations[language])) assert.ok(typeof value === 'string' && value.length > 0);
   }
+});
+
+
+test('formats entered amounts without changing decimal precision or invalid text', () => {
+  for (const [input, expected] of [['1000000', '1 000 000'], ['1234,', '1 234,'], ['1234567.89', '1 234 567.89'], ['1 2345', '12 345'], ['1000\u00a0000', '1 000 000'], ['', ''], ['-1000', '-1000'], ['1.234', '1.234']]) {
+    assert.equal(formatAmountInput(input), expected);
+  }
+});
+
+test('splits the total exactly with complementary shares and cent rounding', () => {
+  assert.deepEqual(splitTotal(248000n, 4000n), { first: 99200n, remaining: 148800n });
+  assert.deepEqual(splitTotal(1n, 5000n), { first: 1n, remaining: 0n });
+  assert.deepEqual(splitTotal(12345n, 0n), { first: 0n, remaining: 12345n });
+  assert.deepEqual(splitTotal(12345n, 10000n), { first: 12345n, remaining: 0n });
+  assert.deepEqual(splitTotal(10000n, 3350n), { first: 3350n, remaining: 6650n });
+});
+
+test('restores a valid split and falls back for an invalid split', () => {
+  const storage = split => ({ getItem: () => JSON.stringify({ split }) });
+  assert.equal(readSettings(storage('33.5')).split, '33.5');
+  for (const split of ['101', '-1', '', 40]) assert.equal(readSettings(storage(split)).split, '40');
 });

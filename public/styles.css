@@ -55,17 +55,16 @@ select{font-size:16px;appearance:none;-webkit-appearance:none;cursor:pointer;pad
 .result-top .step{border-color:#d2dccb;color:#637455}
 .result-top h2{color:#52624a}
 .result-top>svg{margin-left:auto;width:19px;color:#637455}
-.total{display:block;font-family:Georgia,"Times New Roman",serif;font-size:clamp(32px,4vw,46px);line-height:1.2;letter-spacing:-1.7px;color:#28442e;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;user-select:text;-webkit-user-select:text}
+.total{display:block;border:0;background:transparent;padding:0;text-align:left;width:100%;font-family:Georgia,"Times New Roman",serif;font-size:clamp(32px,4vw,46px);line-height:1.2;letter-spacing:-1.7px;color:#28442e;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;user-select:text;-webkit-user-select:text}
+.total:hover:enabled{color:#162c1b}
+.copy-hint{font-size:11px;color:#5d6d52;margin:8px 0 0}
+.split-breakdown{margin-bottom:0}
 .empty-currency{font-size:25px;letter-spacing:-.5px;color:#667558}
 .tax-status{font-size:11px;margin:10px 0 30px;color:#5d6d52}
 .breakdown{margin:0 0 23px;padding:21px 0 0;border-top:1px solid #d7dfcf;font-size:12px;display:flex;flex-direction:column;gap:12px}
 .breakdown>div{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
 dt{color:#5c6b53;flex-shrink:0}
 dd{margin:0;color:#3e5436;font-weight:500;text-align:right;overflow-wrap:anywhere;min-width:0}
-.copy-button{display:flex;align-items:center;justify-content:center;gap:10px;border:0;border-radius:9px;background:#2b4b35;color:#fff;min-height:49px;width:100%;font-size:12px;font-weight:500;margin-top:auto;padding:10px}
-.copy-button:hover:enabled{background:#1f3928}
-.copy-button:disabled{background:#d8e0cf;color:#66745c}
-.copy-button svg{width:16px;height:16px}
 .copy-feedback{font-size:12px;line-height:1.5;min-height:18px;margin:8px 0 0;color:#3e5436;text-align:center}
 .privacy{display:flex;align-items:center;justify-content:center;gap:7px;color:#65705d;font-size:11px;line-height:1.5;margin-top:23px;text-align:center}
 .privacy svg{width:14px;height:14px}
