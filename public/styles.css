@@ -37,9 +37,10 @@ input[type=text],select{border:1px solid var(--border);border-radius:9px;backgro
 input[type=text]{font-size:24px;letter-spacing:-.6px;font-variant-numeric:tabular-nums;padding-right:43px;min-width:0}
 .amount-field>span{position:absolute;right:17px;color:#7b8774;font-size:20px;pointer-events:none}
 .commission-label{margin-top:25px}
-.select-wrap{position:relative}
-select{font-size:16px;appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:36px}
-.select-wrap>svg{position:absolute;right:15px;top:50%;transform:translateY(-50%);pointer-events:none}
+.select-wrap{display:grid;align-items:center;min-width:0}
+select{display:block;min-width:0;margin:0;font-size:16px;line-height:1.5;appearance:none;-webkit-appearance:none;-moz-appearance:none;cursor:pointer;padding-right:48px}
+.select-wrap>select,.select-wrap>svg{grid-area:1 / 1}
+.select-wrap>svg{display:block;justify-self:end;width:20px;height:20px;margin-right:16px;pointer-events:none}
 .vat-toggle{display:flex;align-items:center;justify-content:space-between;position:relative;gap:15px;padding-top:24px;margin:26px 0 0;border-top:1px solid #ebeee7;min-height:65px;cursor:pointer}
 .vat-title{display:block;font-size:13px;font-weight:500}
 .vat-detail{display:block;margin-top:5px;color:#66715d;font-size:11px;font-weight:400}
