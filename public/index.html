@@ -29,7 +29,7 @@
       <div class="input-panel">
         <div class="section-heading"><span class="step">01</span><h2 data-i18n="calculator">Kalkulaator</h2><span class="currency-tag">EUR</span></div>
         <label for="property" data-i18n="property">Kinnisvara väärtus</label>
-        <div class="amount-field"><input id="property" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="nt 200 000" data-i18n-placeholder="propertyPlaceholder" aria-describedby="property-error"><span aria-hidden="true">€</span></div>
+        <div class="amount-field"><input id="property" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="property-error"><span aria-hidden="true">€</span></div>
         <p class="field-error" id="property-error" hidden></p>
         <label class="commission-label" for="commission" data-i18n="commission">Vahendustasu määr</label>
         <div class="select-wrap"><select id="commission"><option value="100">1%</option><option value="150">1,5%</option><option value="200" selected>2%</option><option value="250">2,5%</option><option value="300">3%</option><option value="350">3,5%</option><option value="400">4%</option></select><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m6 8 4 4 4-4"/></svg></div>
@@ -37,7 +37,7 @@
       </div>
       <div class="result-panel">
         <div class="result-top"><span class="step">02</span><h2><label for="total" data-i18n="result">Vahendustasu kokku</label></h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 19 19 5M5 5h14v14"/></svg></div>
-        <div class="total-field"><input id="total" class="total" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="—" aria-describedby="total-hint total-error"><span>EUR</span></div>
+        <div class="amount-field"><input id="total" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="total-hint total-error"><span aria-hidden="true">€</span></div>
         <p id="total-hint" class="total-hint" data-i18n="totalHint">Sisesta kogusumma, et arvutada kinnisvara väärtus.</p>
         <p class="field-error" id="total-error" hidden></p>
         <p class="tax-status" id="tax-status">Ilma käibemaksuta</p>
