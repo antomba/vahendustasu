@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parseDecimal, parseVat, calculate, formatMoney, readSettings, formatAmountInput, splitTotal } from '../public/calculator.js';
+import { parseDecimal, parseVat, calculate, calculateFromTotal, formatMoneyInput, formatMoney, readSettings, formatAmountInput, splitTotal } from '../public/calculator.js';
 import { translations } from '../public/translations.js';
 
 test('accepts decimal separators and properly grouped pasted amounts', () => {
@@ -88,4 +88,39 @@ test('restores a valid split and falls back for an invalid split', () => {
   const storage = split => ({ getItem: () => JSON.stringify({ split }) });
   assert.equal(readSettings(storage('33.5')).split, '33.5');
   for (const split of ['101', '-1', '', 40]) assert.equal(readSettings(storage(split)).split, '40');
+});
+
+
+test('calculates property value from manually entered totals with VAT off and on', () => {
+  assert.deepEqual(calculateFromTotal(200000n, 200, 2400, false), { property: 10000000n, commission: 200000n, vat: 0n, total: 200000n });
+  assert.deepEqual(calculateFromTotal(248000n, 200, 2400, true), { property: 10000000n, commission: 200000n, vat: 48000n, total: 248000n });
+  assert.deepEqual(calculateFromTotal(620000n, 250, 2400, true), { property: 20000000n, commission: 500000n, vat: 120000n, total: 620000n });
+  for (const rate of [100, 150, 200, 250, 300, 350, 400]) {
+    for (const vat of [0, 2400, 10000]) {
+      const forward = calculate(10000000n, rate, vat, true);
+      const reverse = calculateFromTotal(forward.total, rate, vat, true);
+      assert.equal(reverse.property, 10000000n);
+      assert.equal(reverse.commission, forward.commission);
+      assert.equal(reverse.vat, forward.vat);
+    }
+  }
+});
+
+test('reverse calculations preserve the entered total and round only at the final cent', () => {
+  assert.deepEqual(calculateFromTotal(0n, 200, 2400, true), { property: 0n, commission: 0n, vat: 0n, total: 0n });
+  assert.deepEqual(calculateFromTotal(1n, 200, 2400, true), { property: 40n, commission: 1n, vat: 0n, total: 1n });
+  assert.deepEqual(calculateFromTotal(1n, 400, 10000, true), { property: 13n, commission: 1n, vat: 0n, total: 1n });
+  for (const total of [1n, 12345n, 1234567890123456789n]) {
+    const result = calculateFromTotal(total, 350, 2455, true);
+    assert.equal(result.total, total);
+    assert.equal(result.commission + result.vat, total);
+  }
+});
+
+test('formats calculated amounts as editable values accepted in every language', () => {
+  for (const language of ['EE', 'EN', 'RU']) {
+    for (const cents of [0n, 12345n, 20000000n, 1234567890123456789n]) {
+      assert.equal(parseDecimal(formatMoneyInput(cents, language)).hundredths, cents);
+    }
+  }
 });

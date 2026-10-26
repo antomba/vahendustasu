@@ -1,6 +1,6 @@
 # Vahendustasu
 
-A minimal real estate commission calculator in Estonian, English, and Russian. Frontend only, with exact decimal calculations, configurable VAT, copyable results, and offline PWA support. No dependencies or external requests are needed at runtime.
+A minimal real estate commission calculator in Estonian, English, and Russian. Frontend only, with exact decimal calculations, configurable VAT, editable totals and reverse property calculations, and offline PWA support. No dependencies or external requests are needed at runtime.
 
 ## Develop and verify
 
@@ -12,7 +12,7 @@ npm test
 npm run build
 ```
 
-The development server opens at http://127.0.0.1:4173. The production build is the static `dist/` directory. Serve it over HTTPS or localhost for service workers and clipboard access. Opening `index.html` directly from the filesystem is not supported.
+The development server opens at http://127.0.0.1:4173. The production build is the static `dist/` directory. Serve it over HTTPS or localhost for service workers. Opening `index.html` directly from the filesystem is not supported.
 
 ## GitHub Pages
 
@@ -25,10 +25,12 @@ All URLs are relative, so root domains and repository subpaths are supported. No
 ## Behavior
 
 - Defaults: Estonian, 24% VAT, 2% commission, VAT excluded, empty property value.
-- Only language and VAT rate are saved under `vahendustasu.settings` in local storage. Calculator inputs reset on reload; opening settings preserves them.
+- Only language, commission split, and VAT rate are saved under `vahendustasu.settings` in local storage. Calculator inputs reset on reload; opening settings preserves them.
 - Property values accept a comma or period decimal separator, up to two decimal places, and correctly grouped spaces between thousands. Mixed separators and ambiguous three-digit decimal fractions are rejected.
 - Calculations use integer cents and hundredths of a percent. Commission and VAT each round half up to cents before addition.
-- Copy returns the displayed, localized total with `EUR`. Manual text selection is available when clipboard permission is denied.
+- Edit either property value or total commission to calculate the other amount. The last edited amount stays fixed when changing commission or VAT rates.
+- Entered totals include VAT when enabled. Reverse calculations divide the total by the VAT multiplier and commission rate, rounding property value and pre-VAT commission half up to cents, and preserve the entered total. At cent-level rounding boundaries, recalculating forward from the rounded property value can differ by a cent.
+- Both amount fields accept the same decimal separators and grouped spaces. Clearing or invalidating the active amount clears the calculated amount and breakdown.
 - Invalid VAT edits do not replace the last valid rate. Reopening settings restores the last valid rate.
 - Unavailable local storage leaves the calculator usable and shows a notice.
 
@@ -46,7 +48,7 @@ Verify current and previous major Safari versions on iOS/iPadOS/macOS and Chrome
 
 - Enter the examples in the requirements; test every commission option and VAT off/on, including 0% and 100% rates.
 - Paste grouped amounts and decimal fractions; check invalid values and a valid zero result.
-- Copy a result after changing the amount, rate, language, and VAT. Deny clipboard access and verify manual copying guidance.
+- Enter a total with VAT off/on and verify the property value, breakdown, and split. Change rates, clear either amount, and switch calculation direction.
 - Switch all languages, reload, and verify only settings persist. Block local storage and verify the warning and usable calculation.
 - Open and close settings using pointer, keyboard, Escape, and screen reader; check labels, focus visibility, and confirmation announcements.
 - Check 320px phones, iPhone and iPad portrait/landscape, desktop, and enlarged text for clipping or horizontal scrolling.

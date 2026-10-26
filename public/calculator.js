@@ -34,6 +34,20 @@ export function calculate(propertyCents, commissionHundredths, vatHundredths, in
   return { commission, vat, total: commission + vat };
 }
 
+export function calculateFromTotal(total, commissionHundredths, vatHundredths, includeVat) {
+  const divisor = includeVat ? 10000n + BigInt(vatHundredths) : 10000n;
+  const commission = (total * 10000n + divisor / 2n) / divisor;
+  const rate = BigInt(commissionHundredths);
+  const propertyDivisor = rate * divisor;
+  const property = (total * 100000000n + propertyDivisor / 2n) / propertyDivisor;
+  return { property, commission, vat: total - commission, total };
+}
+
+export function formatMoneyInput(cents, language) {
+  const decimal = language === 'EN' ? '.' : ',';
+  return formatAmountInput(`${cents / 100n}${decimal}${String(cents % 100n).padStart(2, '0')}`);
+}
+
 export function formatMoney(cents, language) {
   const locale = { EE: 'et-EE', EN: 'en-GB', RU: 'ru-RU' }[language] || 'et-EE';
   const whole = new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(cents / 100n);

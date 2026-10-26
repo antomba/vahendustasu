@@ -1,4 +1,4 @@
-import { parseDecimal, parseVat, calculate, formatMoney, readSettings, formatAmountInput, splitTotal } from './calculator.js';
+import { parseDecimal, parseVat, calculate, calculateFromTotal, formatMoneyInput, formatMoney, readSettings, formatAmountInput, splitTotal } from './calculator.js';
 import { translations } from './translations.js';
 
 const $ = id => document.getElementById(id);
@@ -8,8 +8,7 @@ const loaded = readSettings(storage);
 const settings = { language: loaded.language, vat: loaded.vat, split: loaded.split };
 let storageAvailable = loaded.available;
 let result = null;
-let feedbackKey = '';
-let feedbackTimer;
+let amountSource = 'property';
 let offlineKey = 'offlinePreparing';
 const t = key => translations[settings.language][key];
 const rateText = value => new Intl.NumberFormat({ EE: 'et-EE', EN: 'en-GB', RU: 'ru-RU' }[settings.language], { maximumFractionDigits: 2 }).format(Number(value.replace(',', '.')));
@@ -30,19 +29,25 @@ function renderStorage() {
 }
 
 function renderResult() {
-  const property = parseDecimal($('property').value);
-  const invalid = property.state === 'invalid';
-  $('property').setAttribute('aria-invalid', String(invalid));
-  $('property-error').hidden = !invalid;
-  $('property-error').textContent = t('invalidProperty');
+  const source = $(amountSource);
+  const amount = parseDecimal(source.value);
+  for (const id of ['property', 'total']) {
+    const invalid = id === amountSource && amount.state === 'invalid';
+    $(id).setAttribute('aria-invalid', String(invalid));
+    $(`${id}-error`).hidden = !invalid;
+    $(`${id}-error`).textContent = t('invalidProperty');
+  }
   const rate = rateText(settings.vat);
   $('vat-detail').textContent = `${settings.language === 'EE' ? 'KM' : t('vat')} ${rate}%`;
   $('vat-label').textContent = `${t('vat')} (${rate}%)`;
   const includeVat = $('include-vat').checked;
   $('vat-row').hidden = !includeVat;
   $('tax-status').textContent = t(includeVat ? 'includingVat' : 'excludingVat');
-  result = property.state === 'valid' ? calculate(property.hundredths, $('commission').value, parseVat(settings.vat).hundredths, includeVat) : null;
-  $('total').disabled = !result;
+  result = amount.state === 'valid'
+    ? (amountSource === 'total' ? calculateFromTotal : calculate)(amount.hundredths, $('commission').value, parseVat(settings.vat).hundredths, includeVat)
+    : null;
+  const target = $(amountSource === 'total' ? 'property' : 'total');
+  target.value = result ? formatMoneyInput(amountSource === 'total' ? result.property : result.total, settings.language) : '';
   const percentage = parseVat(settings.split).hundredths;
   $('split-label').textContent = `${rateText(settings.split)}%`;
   $('remaining-label').textContent = `${rateText(String(Number(10000n - percentage) / 100))}%`;
@@ -50,26 +55,14 @@ function renderResult() {
     const shares = splitTotal(result.total, percentage);
     $('split-result').textContent = formatMoney(shares.first, settings.language);
     $('remaining-result').textContent = formatMoney(shares.remaining, settings.language);
-    $('total').textContent = formatMoney(result.total, settings.language);
     $('base-result').textContent = formatMoney(result.commission, settings.language);
     $('vat-result').textContent = formatMoney(result.vat, settings.language);
   } else {
-    $('total').replaceChildren(document.createTextNode('—'));
-    const currency = document.createElement('span');
-    currency.className = 'empty-currency';
-    currency.textContent = ' EUR';
-    $('total').append(currency);
     $('split-result').textContent = '—';
     $('remaining-result').textContent = '—';
     $('base-result').textContent = '—';
     $('vat-result').textContent = '—';
   }
-}
-
-function clearFeedback() {
-  clearTimeout(feedbackTimer);
-  feedbackKey = '';
-  $('copy-feedback').textContent = '';
 }
 
 function validateSplit() {
@@ -99,17 +92,17 @@ function renderLanguage() {
   document.querySelectorAll('[data-i18n-aria]').forEach(element => { element.setAttribute('aria-label', t(element.dataset.i18nAria)); });
   for (const option of $('commission').options) option.textContent = `${rateText(String(Number(option.value) / 100))}%`;
   $('language').value = settings.language;
-  $('copy-feedback').textContent = feedbackKey ? t(feedbackKey) : '';
   $('offline-status').textContent = t(offlineKey);
   renderStorage();
   renderResult();
   if ($('settings-dialog').open) { validateVat(); validateSplit(); }
 }
 
-for (const id of ['property', 'commission', 'include-vat']) {
+for (const id of ['property', 'total', 'commission', 'include-vat']) {
   $(id).addEventListener('input', () => {
-    if (id === 'property') {
-      const field = $('property');
+    if (id === 'property' || id === 'total') {
+      amountSource = id;
+      const field = $(id);
       const position = field.selectionStart;
       const charactersBefore = field.value.slice(0, position).replace(/[ \u00a0\u202f]/g, '').length;
       const formatted = formatAmountInput(field.value);
@@ -124,7 +117,6 @@ for (const id of ['property', 'commission', 'include-vat']) {
         field.setSelectionRange(cursor, cursor);
       }
     }
-    clearFeedback();
     renderResult();
   });
 }
@@ -140,7 +132,6 @@ $('open-settings').addEventListener('click', () => {
 $('language').addEventListener('change', () => {
   settings.language = $('language').value;
   saveSettings();
-  clearFeedback();
   renderLanguage();
 });
 $('vat-rate').addEventListener('input', () => {
@@ -148,7 +139,6 @@ $('vat-rate').addEventListener('input', () => {
   if (parsed.state === 'valid') {
     settings.vat = String(Number(parsed.hundredths) / 100);
     saveSettings();
-    clearFeedback();
     renderResult();
   }
 });
@@ -157,7 +147,6 @@ $('split-rate').addEventListener('input', () => {
   if (parsed.state === 'valid') {
     settings.split = String(Number(parsed.hundredths) / 100);
     saveSettings();
-    clearFeedback();
     renderResult();
   }
 });
@@ -169,19 +158,6 @@ for (const dialog of document.querySelectorAll('dialog')) {
     if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) dialog.close();
   });
 }
-$('total').addEventListener('click', async () => {
-  if (!result) return;
-  const text = formatMoney(result.total, settings.language);
-  clearFeedback();
-  try {
-    await navigator.clipboard.writeText(text);
-    feedbackKey = 'copied';
-  } catch {
-    feedbackKey = 'copyFailed';
-  }
-  $('copy-feedback').textContent = t(feedbackKey);
-  feedbackTimer = setTimeout(clearFeedback, feedbackKey === 'copied' ? 3500 : 12000);
-});
 let installPrompt;
 window.addEventListener('beforeinstallprompt', event => { event.preventDefault(); installPrompt = event; });
 window.addEventListener('appinstalled', () => { installPrompt = undefined; $('open-install').hidden = true; });
@@ -217,6 +193,7 @@ async function registerOffline() {
   } catch { setOfflineStatus('offlineFailed'); }
 }
 $('property').value = '';
+$('total').value = '';
 $('commission').value = '200';
 $('include-vat').checked = false;
 $('vat-rate').value = rateText(settings.vat);

@@ -10,7 +10,7 @@ async function worker() {
   let claimed = false;
   const caches = {
     async open() { return { async addAll(urls) { for (const url of urls) cached.set(url, { url }); }, async match(request) { return cached.get(typeof request === 'string' ? request : request.url); } }; },
-    async keys() { return ['vahendustasu-/vahendustasu/-old', 'other-app-cache', 'vahendustasu-/other/-v1', 'vahendustasu-/vahendustasu/-v4']; },
+    async keys() { return ['vahendustasu-/vahendustasu/-old', 'other-app-cache', 'vahendustasu-/other/-v1', 'vahendustasu-/vahendustasu/-v5']; },
     async delete(key) { deleted.push(key); },
     async match() { assert.fail('Must read from the active version cache only'); }
   };

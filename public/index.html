@@ -36,13 +36,13 @@
         <label class="vat-toggle" for="include-vat"><span><span class="vat-title" data-i18n="includeVat">Lisa käibemaks</span><span class="vat-detail" id="vat-detail">KM 24%</span></span><input id="include-vat" type="checkbox"><span class="switch" aria-hidden="true"></span></label>
       </div>
       <div class="result-panel">
-        <div class="result-top"><span class="step">02</span><h2 data-i18n="result">Vahendustasu kokku</h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 19 19 5M5 5h14v14"/></svg></div>
-        <button id="total" class="total" type="button" data-i18n-aria="copy" aria-label="Kopeeri tulemus" aria-describedby="copy-hint copy-feedback" disabled>—<span class="empty-currency"> EUR</span></button>
-        <p id="copy-hint" class="copy-hint" data-i18n="copyHint">Kopeerimiseks vajuta summale</p>
+        <div class="result-top"><span class="step">02</span><h2><label for="total" data-i18n="result">Vahendustasu kokku</label></h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 19 19 5M5 5h14v14"/></svg></div>
+        <div class="total-field"><input id="total" class="total" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="—" aria-describedby="total-hint total-error"><span>EUR</span></div>
+        <p id="total-hint" class="total-hint" data-i18n="totalHint">Sisesta kogusumma, et arvutada kinnisvara väärtus.</p>
+        <p class="field-error" id="total-error" hidden></p>
         <p class="tax-status" id="tax-status">Ilma käibemaksuta</p>
         <dl class="breakdown"><div><dt data-i18n="beforeVat">Vahendustasu</dt><dd id="base-result">—</dd></div><div id="vat-row" hidden><dt id="vat-label">Käibemaks (24%)</dt><dd id="vat-result">—</dd></div></dl>
         <dl class="breakdown split-breakdown"><div><dt id="split-label">40%</dt><dd id="split-result">—</dd></div><div><dt id="remaining-label">60%</dt><dd id="remaining-result">—</dd></div></dl>
-        <p id="copy-feedback" class="copy-feedback" role="status" aria-live="polite"></p>
       </div>
     </section>
     <p id="storage-warning" class="notice" role="status" hidden></p>
