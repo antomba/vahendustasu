@@ -37,8 +37,7 @@
       </div>
       <div class="result-panel">
         <div class="result-top"><span class="step">02</span><h2><label for="total" data-i18n="result">Vahendustasu kokku</label></h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 19 19 5M5 5h14v14"/></svg></div>
-        <div class="amount-field"><input id="total" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="total-hint total-error"><span aria-hidden="true">€</span></div>
-        <p id="total-hint" class="total-hint" data-i18n="totalHint">Sisesta kogusumma, et arvutada kinnisvara väärtus.</p>
+        <div class="amount-field"><input id="total" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="total-error"><span aria-hidden="true">€</span></div>
         <p class="field-error" id="total-error" hidden></p>
         <p class="tax-status" id="tax-status">Ilma käibemaksuta</p>
         <dl class="breakdown"><div><dt data-i18n="beforeVat">Vahendustasu</dt><dd id="base-result">—</dd></div><div id="vat-row" hidden><dt id="vat-label">Käibemaks (24%)</dt><dd id="vat-result">—</dd></div></dl>
@@ -53,7 +52,7 @@
     <div class="dialog-header"><h2 id="settings-heading" data-i18n="settingsTitle">Sinu eelistused</h2><button class="close-button" data-close="settings-dialog" type="button" data-i18n-aria="close" aria-label="Sulge">×</button></div>
     <p class="dialog-intro" data-i18n="settingsIntro">Seaded salvestatakse ainult sellesse brauserisse.</p>
     <label for="language" data-i18n="language">Keel</label>
-    <select id="language"><option value="EE" lang="et">EE · Eesti</option><option value="EN" lang="en">EN · English</option><option value="RU" lang="ru">RU · Русский</option></select>
+    <div class="select-wrap"><select id="language"><option value="EE" lang="et">EE · Eesti</option><option value="EN" lang="en">EN · English</option><option value="RU" lang="ru">RU · Русский</option></select><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m6 8 4 4 4-4"/></svg></div>
     <label class="commission-label" for="vat-rate" data-i18n="vatRate">Käibemaksumäär</label>
     <div class="amount-field settings-amount"><input id="vat-rate" type="text" inputmode="decimal" autocomplete="off" aria-describedby="vat-hint vat-error"><span aria-hidden="true">%</span></div>
     <p class="field-hint" id="vat-hint" data-i18n="vatHint">Rakendub, kui käibemaks on sisse lülitatud.</p>
